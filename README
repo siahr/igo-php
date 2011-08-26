@@ -1,4 +1,4 @@
-Igo-php ― PHPによる形態素解析プログラム
+Igo-php - PHPによる形態素解析プログラム
 
 1. 概要
     これは「Igo - Java形態素解析器」の PHP による実装です。Igo は、MeCab
@@ -53,18 +53,16 @@ Igo-php ― PHPによる形態素解析プログラム
     うち    名詞,非自立,副詞可能,*,*,*,うち,ウチ,ウチ,10
     --
 
-    Igo.php は mb_internal_encoding, および mb_http_output で指定された値を
-    参照します。環境により文字化けするような場合は環境変数 IGO_INTERNAL_ENCODING,
-    IGO_OUTPUT_ENCODING に適切な値をセットしてください。
+    Igo.php は 指定された文字列から判定して出力エンコードを決定します。従
+    って、入力データがすべて ASCII であるような場合、結果が文字化けするこ
+    とがあります。このような場合は環境変数 IGO_OUTPUT_ENCODING に適切な値
+    をセットすることで、文字化けを回避することが出来ます。
 
 (2) PHPプログラムから呼び出す場合
    a. 分かち書き
     <?php
     require_once 'Igo.php';
 
-    $encode = "UTF-8";
-    mb_http_output($encode);
-    mb_internal_encoding($encode);
     $igo = new Igo("/home/user/ipadic");
     $result = $igo->wakati("すもももももももものうち");
     print_r($result);
@@ -74,17 +72,16 @@ Igo-php ― PHPによる形態素解析プログラム
     <?php
     require_once 'Igo.php';
 
-    $encode = "UTF-8";
-    mb_http_output($encode);
-    mb_internal_encoding($encode);
     $igo = new Igo("/home/user/ipadic");
     $result = $igo->parse("すもももももももものうち");
     print_r($result);
     ?>
 
-    ※php.iniで明示的に mbstring.http_output, mbstring.internal_encoding を
-    指定していない場合は、上記のようにコード内で適切な値を設定するようにし
-    てください。
+    単体で使用する場合と同様に、指定した文字列から適切なエンコードが判定出
+    来ないような場合は、Igo クラスのコンストラクタの第2引数に、出力エンコー
+    ドを明示的に指定することで回避できます。
+
+    $igo = new Igo("/home/user/ipadic", "UTF-8");
 
 5. REDUCE モード
     これは、リソースとインスタンス生成に関わるコストを調整するためのもので
@@ -114,10 +111,10 @@ Igo-php ― PHPによる形態素解析プログラム
     では使用できません。逆もまた然り。
     Igo-phpは、デフォルトでリトルエンディアン用の設定になっています。
     Intel系のプラットフォームでは、このままでよいはずです。
-    もし、ビッグエンディアンのプラットフォームで利用する場合は、以下の設定
-    内容を調整してみてください。
+    ビッグエンディアンのプラットフォームで利用する場合は、以下の設定内容を
+    変更してみてください。
 
-    define('IGO_DICTIONARY_ENCODING', "UTF-16LE");
+    define('IGO_LITTLE_ENDIAN', true); //true->Little endian, false->Big endian
 
 7. ライセンス
     MITライセンスで配布いたします。詳しくは同梱の COPYING ファイルを参照の

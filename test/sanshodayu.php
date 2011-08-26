@@ -4,7 +4,7 @@ require_once '../lib/Igo.php';
 $encode = "UTF-8";
 ini_set("memory_limit", "1073741824"); //1024^3
 
-$text = mb_convert_encoding(file_get_contents("C:/Users/hirai/wagahaiwa_nekodearu.txt"), $encode, "Shift_JIS");
+$text = mb_convert_encoding(file_get_contents("C:/Users/hirai/sanshodayu.txt"), $encode, "Shift_JIS");
 
 $igo = new Igo("C:/Users/hirai/ipadic");
 $bench = new benchmark();

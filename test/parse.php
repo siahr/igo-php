@@ -1,10 +1,7 @@
 <?php
 require_once '../lib/Igo.php';
 
-$encode = "UTF-8";
-mb_http_output($encode);
-mb_internal_encoding($encode);
-$igo = new Igo("C:/Users/hirai/ipadic");
-$result = $igo->parse("すもももももももものうち");
+$igo = new Igo("C:/Users/hirai/ipadic", "UTF-8");
+$result = $igo->parse("english context.");
 print_r($result);
 ?>

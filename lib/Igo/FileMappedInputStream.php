@@ -73,22 +73,7 @@ class FileMappedInputStream {
 
 	public function getCharArray($count) {
 		$data = unpack("C*", fread($this->file, $count * 2));
-		if (EACH_CONVERT_WORD2ID) {
-			return $data;
-		} else {
-			$tmp = array();
-			$j = SO;
-			for ($i = 1; $i <= count($data); $i++) {
-				if ($i % 2 != 0) {
-					if ($data[$i + 1] == 0 && $data[$i] == 0) {
-						$tmp[$j++] = null;
-					} else {
-						$tmp[$j++] = mb_convert_encoding(pack('C*', $data[$i], $data[$i + 1]), Igo::$ENCODE, IGO_DICTIONARY_ENCODING);
-					}
-				}
-			}
-			return $tmp;
-		}
+		return $data;
 	}
 
 	public function getString($count) {

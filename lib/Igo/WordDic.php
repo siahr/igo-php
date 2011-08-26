@@ -38,8 +38,7 @@ class WordDic {
 	public function wordData($wordId) {
 		$s = ($this->dataOffsets->get($wordId)) * 2;
 		$l = ($this->dataOffsets->get($wordId + 1) - $this->dataOffsets->get($wordId)) * 2;
-		$str = substr($this->data, $s, $l);
-		return mb_convert_encoding($str, Igo::$ENCODE, IGO_DICTIONARY_ENCODING);
+		return substr($this->data, $s, $l);
 	}
 }
 

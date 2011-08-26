@@ -33,7 +33,6 @@ class Searcher {
 	}
 
 	public function search($key) {
-		$key = mb_convert_encoding($key, IGO_DICTIONARY_ENCODING, Igo::$ENCODE);
 		$node = $this->base->get(0);
 		$in = new KeyStream($key);
 
@@ -55,7 +54,6 @@ class Searcher {
 	}
 
 	public function eachCommonPrefix($key, $start, $fn) {
-		$key = mb_convert_encoding($key, IGO_DICTIONARY_ENCODING, Igo::$ENCODE);
 		$node = $this->base->get(0);
 		$offset = 0;
 		$in = new KeyStream($key, $start);
@@ -86,8 +84,15 @@ class Searcher {
 	}
 
 	public static function codePoints($str) {
-		$ord = unpack('N', mb_convert_encoding($str, 'UCS-4BE', Igo::$ENCODE));
-		return $ord[1];
+		$c = unpack("C*", $str);
+		if (!isset($c[1])) $c[1] = 0;
+		if (!isset($c[2])) $c[2] = 0;
+		if (IGO_LITTLE_ENDIAN) {
+			$n = ($c[2] * 16 * 16) + $c[1];
+		} else {
+			$n = ($c[1] * 16 * 16) + $c[2];
+		}
+		return $n;
 	}
 
 	private function call_if_keyIncluding($in, $node, $start, $offset, $fn) {
@@ -99,7 +104,7 @@ class Searcher {
 
 	private function keyExists($in, $node) {
 		$id = self::ID($node);
-		$s = KeyStream::mb_substr($this->tail, $this->begs->get($id), $this->lens->get($id), Igo::$ENCODE);
+		$s = KeyStream::mb_substr($this->tail, $this->begs->get($id), $this->lens->get($id));
 		return $in . rest() == $s;
 	}
 

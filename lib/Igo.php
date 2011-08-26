@@ -1,7 +1,7 @@
 <?php
 /*
- * Igo-php : A morphological analyzer. (http://igo-php.sourceforge.jp/)
- * Copyright 2011, Infinite Corporation. (http://www.infinite.jp)
+ * Igo-php : A morphological analyzer. (http://sourceforge.jp/projects/igo-php/)
+ * Copyright 2011, Infinite Corporation, Toshio HIRAI. (http://www.infinite.jp/)
  *
  * Licensed under The MIT License
  * Redistributions of files must retain the above copyright notice.
@@ -13,26 +13,26 @@
 require_once 'Igo/Tagger.php';
 
 define('IGO_REDUCE_MODE', true);
-define('IGO_DICTIONARY_ENCODING', "UTF-16LE");
+define('IGO_LITTLE_ENDIAN', true);
 
 if (isset($argc) && $argc > 1) {
-	$internalEnc = getenv("IGO_INTERNAL_ENCODING");
-	if ($internalEnc) {
-		mb_internal_encoding($internalEnc);
-	}
-	$outputEnc = getenv("IGO_OUTPUT_ENCODING");
-	if ($outputEnc) {
-		mb_http_output($outputEnc);
-	}
 	$dataDir = $argv[1];
+	if (!is_dir($dataDir)) {
+		die('dictionary not found.');
+	}
 	$text = $argv[2];
 	if (is_file($text)) {
 		$text = file_get_contents($text);
 	}
-	$enc = mb_detect_encoding($text);
-	$text = mb_convert_encoding($text, mb_internal_encoding(), $enc);
 
-	$igo = new Igo($dataDir);
+	$enc = mb_detect_encoding($text);
+	if ($e = getenv("IGO_OUTPUT_ENCODING")) {
+		$enc = $e;
+	}
+	mb_internal_encoding($enc);
+	mb_http_output($enc);
+
+	$igo = new Igo($dataDir, $enc);
 	$result = $igo->parse($text);
 	foreach($result as $res) {
 		$buf = "";
@@ -47,12 +47,10 @@ if (isset($argc) && $argc > 1) {
 }
 
 class Igo {
-	public static $ENCODE;
 	private $tagger;
 
-	public function __construct($dataDir) {
-		self::$ENCODE = mb_internal_encoding();
-		$this->tagger = new Tagger($dataDir);
+	public function __construct($dataDir, $outputEncoding = null) {
+		$this->tagger = new Tagger($dataDir, $outputEncoding);
 	}
 
 	public function wakati($text) {
@@ -62,6 +60,5 @@ class Igo {
 	public function parse($text) {
 		return $this->tagger->parse($text);
 	}
-
 }
 ?>

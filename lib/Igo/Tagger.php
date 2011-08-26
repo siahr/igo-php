@@ -15,16 +15,18 @@ require_once 'Searcher.php';
 define('NODE_BASE_INIT_VALUE', ~PHP_INT_MAX);
 define('NODE_CHECK_TERMINATE_CODE', null);
 define('SO', 1); //special offset
-define('EACH_CONVERT_WORD2ID', true);
 define('IGO_RETURN_AS_ARRAY', false);
 
 class Tagger {
 
 	private static $BOS_NODES = array();
 	public static $REDUCE = IGO_REDUCE_MODE;
+	public static $DIC_ENC;
 	private $wdc;
 	private $unk;
 	private $mtx;
+	private $enc;
+	private $outEnc;
 
 	/**
 	 * バイナリ辞書を読み込んで、形態素解析器のインスタンスを作成する
@@ -32,13 +34,26 @@ class Tagger {
 	 * @param dataDir
 	 *            バイナリ辞書があるディレクトリ
 	 */
-	public function __construct($dataDir) {
+	public function __construct($dataDir, $outputEncoding) {
 		self::$BOS_NODES[0] = ViterbiNode::makeBOSEOS();
 		$this->wdc = new WordDic($dataDir);
 		$this->unk = new Unknown($dataDir);
 		$this->mtx = new Matrix($dataDir);
+		$this->outEnc = $outputEncoding;
+		if (IGO_LITTLE_ENDIAN) {
+			self::$DIC_ENC = "UTF-16LE";
+		} else {
+			self::$DIC_ENC = "UTF-16BE";
+		}
 	}
 
+	private function getEnc() {
+		if ($this->outEnc != null) {
+			return $this->outEnc;
+		} else {
+			return $this->enc;
+		}
+	}
 	/**
 	 * 形態素解析を行う
 	 *
@@ -53,9 +68,13 @@ class Tagger {
 			$result = array();
 		}
 
-		for ($vn = $this->parseImpl($text); $vn != null; $vn = $vn->prev) {
-			$surface = mb_substr($text, $vn->start, $vn->length, Igo::$ENCODE);
-			$feature = $this->wdc->wordData($vn->wordId);
+		$this->enc = mb_detect_encoding($text);
+		$utf16 = mb_convert_encoding($text, self::$DIC_ENC, $this->enc);
+		unset($text);
+
+		for ($vn = $this->parseImpl($utf16); $vn != null; $vn = $vn->prev) {
+			$surface = mb_convert_encoding(substr($utf16, $vn->start * 2, $vn->length * 2), $this->getEnc(), self::$DIC_ENC);
+			$feature = mb_convert_encoding($this->wdc->wordData($vn->wordId), $this->getEnc(), self::$DIC_ENC);
 			if (!IGO_RETURN_AS_ARRAY) {
 				$result[] = new Morpheme($surface, $feature, $vn->start);
 			} else {
@@ -80,17 +99,20 @@ class Tagger {
 			$result = array();
 		}
 
-		for ($vn = $this->parseImpl($text); $vn != null; $vn = $vn->prev) {
-			$result[] = mb_substr($text, $vn->start, $vn->length, Igo::$ENCODE);
+		$this->enc = mb_detect_encoding($text);
+		$utf16 = mb_convert_encoding($text, self::$DIC_ENC, $this->enc);
+		unset($text);
+
+		for ($vn = $this->parseImpl($utf16); $vn != null; $vn = $vn->prev) {
+			$result[] = mb_convert_encoding(substr($utf16, $vn->start * 2, $vn->length * 2), $this->getEnc(), self::$DIC_ENC);
 		}
 
 		return $result;
 	}
 
 	private function parseImpl($text) {
-		$len = mb_strlen($text, Igo::$ENCODE);
+		$len = strlen($text) / 2;
 		$nodesAry[] = self::$BOS_NODES;
-		$utf16 = mb_convert_encoding($text, IGO_DICTIONARY_ENCODING, Igo::$ENCODE);
 
 		for ($i = 1; $i <= $len; $i++) {
 			$nodesAry[] = array();
@@ -101,7 +123,7 @@ class Tagger {
 			if (count($nodesAry[$i]) != 0) {
 				$fn->set($i);
 				$this->wdc->search($text, $i, $fn); // 単語辞書から形態素を検索
-				$this->unk->search($utf16, $i, $this->wdc, $fn); // 未知語辞書から形態素を検索
+				$this->unk->search($text, $i, $this->wdc, $fn); // 未知語辞書から形態素を検索
 				unset($nodesAry[$i]);
 			}
 		}

@@ -14,7 +14,7 @@ class Unknown {
 	}
 
 	public function search($text, $start, $wdic, $fn) {
-		$ch = KeyStream::mb_substr($text, $start, 1, Igo::$ENCODE);
+		$ch = KeyStream::mb_substr($text, $start, 1);
 		$ct = $this->category->category($ch);
 
 		if ($fn->isEmpty() == false && $ct->invoke == false) {
@@ -22,23 +22,23 @@ class Unknown {
 		}
 
 		$isSpace = $ct->id == $this->spaceId;
-		$limit = min(KeyStream::mb_strlen($text, Igo::$ENCODE), $ct->length + $start);
+		$limit = min(KeyStream::mb_strlen($text), $ct->length + $start);
 		$i = $start;
 		for (; $i < $limit; $i++) {
 			$wdic->searchFromTrieId($ct->id, $start, ($i - $start) + 1, $isSpace, $fn);
-			if ($i + 1 != $limit && $this->category->isCompatible($ch, KeyStream::mb_substr($text, $i + 1, 1, Igo::$ENCODE)) == false) {
+			if ($i + 1 != $limit && $this->category->isCompatible($ch, KeyStream::mb_substr($text, $i + 1, 1)) == false) {
 				return;
 			}
 		}
 
-		if ($ct->group && $i < KeyStream::mb_strlen($text, Igo::$ENCODE)) {
-			$limit = KeyStream::mb_strlen($text, Igo::$ENCODE);
+		if ($ct->group && $i < KeyStream::mb_strlen($text)) {
+			$limit = KeyStream::mb_strlen($text);
 			for (; $i < $limit; $i++)
-				if ($this->category->isCompatible($ch, KeyStream::mb_substr($text, $i, 1, Igo::$ENCODE)) == false) {
+				if ($this->category->isCompatible($ch, KeyStream::mb_substr($text, $i, 1)) == false) {
 					$wdic->searchFromTrieId($ct->id, $start, $i - $start, $isSpace, $fn);
 					return;
 				}
-			$wdic->searchFromTrieId($ct->id, $start, KeyStream::mb_strlen($text, Igo::$ENCODE) - $start, $isSpace, $fn);
+			$wdic->searchFromTrieId($ct->id, $start, KeyStream::mb_strlen($text) - $start, $isSpace, $fn);
 		}
 	}
 }
