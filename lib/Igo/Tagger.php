@@ -102,6 +102,7 @@ class Tagger {
 				$fn->set($i);
 				$this->wdc->search($text, $i, $fn); // 単語辞書から形態素を検索
 				$this->unk->search($utf16, $i, $this->wdc, $fn); // 未知語辞書から形態素を検索
+				unset($nodesAry[$i]);
 			}
 		}
 

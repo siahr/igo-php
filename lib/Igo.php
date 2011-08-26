@@ -15,7 +15,11 @@ require_once 'Igo/Tagger.php';
 define('IGO_REDUCE_MODE', true);
 define('IGO_DICTIONARY_ENCODING', "UTF-16LE");
 
-if ($argc > 1) {
+if (isset($argc) && $argc > 1) {
+	$internalEnc = getenv("IGO_INTERNAL_ENCODING");
+	if ($internalEnc) {
+		mb_internal_encoding($internalEnc);
+	}
 	$outputEnc = getenv("IGO_OUTPUT_ENCODING");
 	if ($outputEnc) {
 		mb_http_output($outputEnc);
