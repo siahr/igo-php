@@ -14,7 +14,7 @@ require_once 'Searcher.php';
 
 define('NODE_BASE_INIT_VALUE', ~PHP_INT_MAX);
 define('NODE_CHECK_TERMINATE_CODE', null);
-define('SO', 1); //special offset
+define('IGO_ARRAY_SO', 1); //special offset
 define('IGO_RETURN_AS_ARRAY', false);
 
 class Tagger {
@@ -68,7 +68,7 @@ class Tagger {
 			$result = array();
 		}
 
-		$this->enc = mb_detect_encoding($text);
+		$this->enc = mb_detect_encoding($text, IGO_MB_DETECT_ORDER);
 		$utf16 = mb_convert_encoding($text, self::$DIC_ENC, $this->enc);
 		unset($text);
 
@@ -99,7 +99,7 @@ class Tagger {
 			$result = array();
 		}
 
-		$this->enc = mb_detect_encoding($text);
+		$this->enc = mb_detect_encoding($text, IGO_MB_DETECT_ORDER);
 		$utf16 = mb_convert_encoding($text, self::$DIC_ENC, $this->enc);
 		unset($text);
 

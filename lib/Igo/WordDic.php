@@ -29,8 +29,8 @@ class WordDic {
 	}
 
 	public function searchFromTrieId($trieId, $start, $wordLength, $isSpace, $fn) {
-		$end = $this->indices[$trieId + 1 + SO];
-		for ($i = $this->indices[$trieId + SO]; $i < $end; $i++) {
+		$end = $this->indices[$trieId + 1 + IGO_ARRAY_SO];
+		for ($i = $this->indices[$trieId + IGO_ARRAY_SO]; $i < $end; $i++) {
 			$fn->call(new ViterbiNode($i, $start, $wordLength, $this->costs->get($i), $this->leftIds->get($i), $this->rightIds->get($i), $isSpace));
 		}
 	}
@@ -52,8 +52,8 @@ class WordDicCallbackCaller {
 	}
 
 	public function call($start, $offset, $trieId) {
-		$end = $this->wd->indices[$trieId + 1 + SO];
-		for ($i = $this->wd->indices[$trieId + SO]; $i < $end; $i++) {
+		$end = $this->wd->indices[$trieId + 1 + IGO_ARRAY_SO];
+		for ($i = $this->wd->indices[$trieId + IGO_ARRAY_SO]; $i < $end; $i++) {
 			$this->fn->call(new ViterbiNode($i, $start, $offset, $this->wd->costs->get($i), $this->wd->leftIds->get($i), $this->wd->rightIds->get($i), false));
 		}
 	}

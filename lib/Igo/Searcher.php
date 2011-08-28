@@ -105,7 +105,7 @@ class Searcher {
 	private function keyExists($in, $node) {
 		$id = self::ID($node);
 		$s = KeyStream::mb_substr($this->tail, $this->begs->get($id), $this->lens->get($id));
-		return $in . rest() == $s;
+		return $in->rest() == $s;
 	}
 
 }

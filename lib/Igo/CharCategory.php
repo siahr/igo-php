@@ -31,7 +31,7 @@ class CharCategory {
 
 		$ary = array();
 		for ($i = 0; $i < $size; $i++) {
-			$ary[$i] = new Category($data[($i * 4) + SO], $data[($i * 4 + 1) + SO], $data[($i * 4 + 2) + SO] == 1, $data[($i * 4 + 3) + SO] == 1);
+			$ary[$i] = new Category($data[($i * 4) + IGO_ARRAY_SO], $data[($i * 4 + 1) + IGO_ARRAY_SO], $data[($i * 4 + 2) + IGO_ARRAY_SO] == 1, $data[($i * 4 + 3) + IGO_ARRAY_SO] == 1);
 		}
 		return $ary;
 	}
