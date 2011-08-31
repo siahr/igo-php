@@ -9,7 +9,7 @@ class CharMemoryArray extends IntMemoryArray implements CharArray {
 		$this->array = $reader->getCharArray($count);
 	}
 	public function get($idx) {
-		$i = ($idx * 2) + 1;
+		$i = ($idx * 2) + IGO_ARRAY_SO;
 		if ($this->array[$i] == 0 && $this->array[$i + 1] == 0) {
 			$tmp = null;
 		} else {

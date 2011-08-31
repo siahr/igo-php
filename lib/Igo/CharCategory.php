@@ -15,13 +15,13 @@ class CharCategory {
 	}
 
 	public function category($code) {
-		$idx = Searcher::codePoints($code);
+		$idx = Searcher::codePoint($code);
 		return $this->categories[$this->char2id->get($idx)];
 	}
 
 	public function isCompatible($code1, $code2) {
-		$idx1 = Searcher::codePoints($code1);
-		$idx2 = Searcher::codePoints($code2);
+		$idx1 = Searcher::codePoint($code1);
+		$idx2 = Searcher::codePoint($code2);
 		return ($this->eqlMasks->get($idx1) & $this->eqlMasks->get($idx2)) != 0;
 	}
 

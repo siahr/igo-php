@@ -31,7 +31,7 @@ class IntDynamicArray implements IntArray {
 
 	public function get($idx) {
 		fseek($this->fp, $this->start + ($idx * 4));
-		$data = unpack("i*", fread($this->fp, 4));
+		$data = unpack("l*", fread($this->fp, 4));
 		return $data[1];
 	}
 }

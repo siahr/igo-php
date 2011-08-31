@@ -17,13 +17,13 @@ class FileMappedInputStream {
 
 	public function getInt() {
 		$this->cur += 4;
-		$data = unpack("i*", fread($this->file, 4));
+		$data = unpack("l*", fread($this->file, 4));
 		return $data[1];
 	}
 
 	public function getIntArray($count) {
 		$this->cur += ($count * 4);
-		return unpack("i*", fread($this->file, $count * 4));
+		return unpack("l*", fread($this->file, $count * 4));
 	}
 
 	public function getIntArrayInstance($count) {

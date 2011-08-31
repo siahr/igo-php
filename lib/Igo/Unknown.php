@@ -9,7 +9,7 @@ class Unknown {
 
 	public function __construct($dataDir) {
 		$this->category = new CharCategory($dataDir);
-		$this->spaceId = $this->category->category(' ')->id; // NOTE: ' 'の文字カテゴリはSPACEに予約されている
+		$this->spaceId = $this->category->category(chr(32))->id; // NOTE: ' 'の文字カテゴリはSPACEに予約されている
 
 	}
 
@@ -26,7 +26,7 @@ class Unknown {
 		$i = $start;
 		for (; $i < $limit; $i++) {
 			$wdic->searchFromTrieId($ct->id, $start, ($i - $start) + 1, $isSpace, $fn);
-			if ($i + 1 != $limit && $this->category->isCompatible($ch, KeyStream::mb_substr($text, $i + 1, 1)) == false) {
+			if ($i + 1 != $limit && $this->category->isCompatible($ch, KeyStream::mb_substr($text, $i + 1, 1)) === false) {
 				return;
 			}
 		}
@@ -34,7 +34,7 @@ class Unknown {
 		if ($ct->group && $i < KeyStream::mb_strlen($text)) {
 			$limit = KeyStream::mb_strlen($text);
 			for (; $i < $limit; $i++)
-				if ($this->category->isCompatible($ch, KeyStream::mb_substr($text, $i, 1)) == false) {
+				if ($this->category->isCompatible($ch, KeyStream::mb_substr($text, $i, 1)) === false) {
 					$wdic->searchFromTrieId($ct->id, $start, $i - $start, $isSpace, $fn);
 					return;
 				}

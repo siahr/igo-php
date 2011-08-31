@@ -8,17 +8,6 @@ class KeyStream {
 		$this->cur = $start;
 	}
 
-	public function compareTo($ks) {
-		$r = $this->rest();
-		if ($r == $ks->rest()) {
-			return 0;
-		} elseif ($r < $ks->rest()) {
-			return -1;
-		} else {
-			return 1;
-		}
-	}
-
 	public function startsWith($prefix, $beg, $len) {
 		if (self::mb_strlen($this->s) - $this->cur < $len) {
 			return false;

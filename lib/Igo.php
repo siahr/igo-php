@@ -1,7 +1,7 @@
 <?php
 /*
  * Igo-php : A morphological analyzer. (http://sourceforge.jp/projects/igo-php/)
- * Copyright 2011, Infinite Corporation, Toshio HIRAI. (http://www.infinite.jp/)
+ * Copyright 2011, Toshio HIRAI. <toshio.hirai@gmail.com>
  * (This software is based on Igo Java Version (c) Takeru Ohta <phjgt308@gmail.com>)
  *
  * Licensed under The MIT License
