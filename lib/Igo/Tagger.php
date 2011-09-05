@@ -12,9 +12,6 @@ require_once 'CharArray.php';
 require_once 'KeyStream.php';
 require_once 'Searcher.php';
 
-define('NODE_BASE_INIT_VALUE', ~PHP_INT_MAX);
-define('NODE_CHECK_TERMINATE_CODE', null);
-define('IGO_ARRAY_SO', 1); //special offset
 define('IGO_RETURN_AS_ARRAY', false);
 
 class Tagger {
@@ -70,10 +67,10 @@ class Tagger {
 
 		$this->enc = mb_detect_encoding($text, IGO_MB_DETECT_ORDER);
 		$utf16 = mb_convert_encoding($text, self::$DIC_ENC, $this->enc);
-		unset($text);
+		$source = array_values(unpack("S*", $utf16));
 
-		for ($vn = $this->parseImpl($utf16); $vn != null; $vn = $vn->prev) {
-			$surface = mb_convert_encoding(substr($utf16, $vn->start * 2, $vn->length * 2), $this->getEnc(), self::$DIC_ENC);
+		for ($vn = $this->parseImpl($source); $vn != null; $vn = $vn->prev) {
+			$surface = mb_convert_encoding(substr($utf16, $vn->start << 1, $vn->length << 1), $this->getEnc(), self::$DIC_ENC);
 			$feature = mb_convert_encoding($this->wdc->wordData($vn->wordId), $this->getEnc(), self::$DIC_ENC);
 			if (!IGO_RETURN_AS_ARRAY) {
 				$result[] = new Morpheme($surface, $feature, $vn->start);
@@ -101,26 +98,25 @@ class Tagger {
 
 		$this->enc = mb_detect_encoding($text, IGO_MB_DETECT_ORDER);
 		$utf16 = mb_convert_encoding($text, self::$DIC_ENC, $this->enc);
-		unset($text);
+		$source = array_values(unpack("S*", $utf16));
 
-		for ($vn = $this->parseImpl($utf16); $vn != null; $vn = $vn->prev) {
-			$result[] = mb_convert_encoding(substr($utf16, $vn->start * 2, $vn->length * 2), $this->getEnc(), self::$DIC_ENC);
+		for ($vn = $this->parseImpl($source); $vn != null; $vn = $vn->prev) {
+			$result[] = mb_convert_encoding(substr($utf16, $vn->start << 1, $vn->length << 1), $this->getEnc(), self::$DIC_ENC);
 		}
 
 		return $result;
 	}
 
 	private function parseImpl($text) {
-		$len = strlen($text) / 2;
+		$len = count($text);
 		$nodesAry[] = self::$BOS_NODES;
-
 		for ($i = 1; $i <= $len; $i++) {
 			$nodesAry[] = array();
 		}
 
 		$fn = new MakeLattice($this, $nodesAry);
 		for ($i = 0; $i < $len; $i++) {
-			if (count($nodesAry[$i]) != 0) {
+			if (count($nodesAry[$i]) !== 0) {
 				$fn->set($i);
 				$this->wdc->search($text, $i, $fn); // 単語辞書から形態素を検索
 				$this->unk->search($text, $i, $this->wdc, $fn); // 未知語辞書から形態素を検索
@@ -132,7 +128,7 @@ class Tagger {
 
 		// reverse
 		$head = null;
-		while ($cur->prev != null) {
+		while ($cur->prev !== null) {
 			$tmp = $cur->prev;
 			$cur->prev = $head;
 			$head = $cur;

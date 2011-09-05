@@ -15,14 +15,11 @@ class CharCategory {
 	}
 
 	public function category($code) {
-		$idx = Searcher::codePoint($code);
-		return $this->categories[$this->char2id->get($idx)];
+		return $this->categories[$this->char2id->get($code)];
 	}
 
 	public function isCompatible($code1, $code2) {
-		$idx1 = Searcher::codePoint($code1);
-		$idx2 = Searcher::codePoint($code2);
-		return ($this->eqlMasks->get($idx1) & $this->eqlMasks->get($idx2)) != 0;
+		return ($this->eqlMasks->get($code1) & $this->eqlMasks->get($code2)) != 0;
 	}
 
 	private function readCategorys($dataDir) {
@@ -31,7 +28,7 @@ class CharCategory {
 
 		$ary = array();
 		for ($i = 0; $i < $size; $i++) {
-			$ary[$i] = new Category($data[($i * 4) + IGO_ARRAY_SO], $data[($i * 4 + 1) + IGO_ARRAY_SO], $data[($i * 4 + 2) + IGO_ARRAY_SO] == 1, $data[($i * 4 + 3) + IGO_ARRAY_SO] == 1);
+			$ary[$i] = new Category($data[$i * 4], $data[$i * 4 + 1], $data[$i * 4 + 2] == 1, $data[$i * 4 + 3] == 1);
 		}
 		return $ary;
 	}

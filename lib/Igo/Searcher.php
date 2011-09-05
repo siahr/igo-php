@@ -20,7 +20,7 @@ class Searcher {
 		$this->base = $fmis->getIntArrayInstance($nodeSz);
 		$this->lens = $fmis->getShortArrayInstance($tindSz);
 		$this->chck = $fmis->getCharArrayInstance($nodeSz);
-		$this->tail = $fmis->getString($tailSz);
+		$this->tail = array_values(unpack("S*", $fmis->getString($tailSz)));
 
 		$fmis->close();
 	}
@@ -39,18 +39,16 @@ class Searcher {
 
 		for ($code = $in->read();; $code = $in->read(), $offset++) {
 			$terminalIdx = $node;
-			$c = $this->chck->get($terminalIdx);
-			if (empty($c)) {
+			if ($this->chck->get($terminalIdx) === 0) {
 				$fn->call($start, $offset, self::ID($this->base->get($terminalIdx)));
-				if (empty($code)) {
+				if ($code === 0) {
 					return;
 				}
 			}
 
-			$idx = $node + $this->codePoint($code);
+			$idx = $node + $code;
 			$node = $this->base->get($idx);
-			$c = $this->chck->get($idx);
-			if ($c == $code) {
+			if ($this->chck->get($idx) === $code) {
 				if ($node >= 0) {
 					continue;
 				} else {
@@ -59,17 +57,6 @@ class Searcher {
 			}
 			return;
 		}
-	}
-
-	public static function codePoint($str) {
-		$s = unpack("S*", $str);
-		if (empty($s[1])) {
-			$n = 32;
-		} else {
-			$n = $s[1];
-		}
-
-		return $n;
 	}
 
 	private function call_if_keyIncluding($in, $node, $start, $offset, $fn) {

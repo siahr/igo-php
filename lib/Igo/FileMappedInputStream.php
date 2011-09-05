@@ -23,7 +23,7 @@ class FileMappedInputStream {
 
 	public function getIntArray($count) {
 		$this->cur += ($count * 4);
-		return unpack("l*", fread($this->file, $count * 4));
+		return array_values(unpack("l*", fread($this->file, $count * 4)));
 	}
 
 	public function getIntArrayInstance($count) {
@@ -46,7 +46,7 @@ class FileMappedInputStream {
 
 	public function getShortArray($count) {
 		$this->cur += ($count * 2);
-		return unpack("s*", fread($this->file, $count * 2));
+		return array_values(unpack("s*", fread($this->file, $count * 2)));
 	}
 
 	public function getShortArrayInstance($count) {
@@ -72,7 +72,8 @@ class FileMappedInputStream {
 	}
 
 	public function getCharArray($count) {
-		$data = unpack("C*", fread($this->file, $count * 2));
+		$this->cur += ($count * 2);
+		$data = array_values(unpack("S*", fread($this->file, $count * 2)));
 		return $data;
 	}
 

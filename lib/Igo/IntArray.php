@@ -11,7 +11,7 @@ class IntMemoryArray implements IntArray {
 	}
 
 	public function get($idx) {
-		return $this->array[$idx + IGO_ARRAY_SO];
+		return $this->array[$idx];
 	}
 }
 
