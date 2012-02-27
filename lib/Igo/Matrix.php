@@ -20,7 +20,7 @@ class Matrix {
 	 * 形態素同士の連接コストを求める
 	 */
 	public function linkCost($leftId, $rightId) {
-		return $this->matrix->get($rightId * $this->rightSize + $leftId);
+		return $this->matrix->get($rightId * $this->leftSize + $leftId);
 	}
 
 }
